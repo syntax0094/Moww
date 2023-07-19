@@ -9,7 +9,7 @@ let handler = async (m, { text, usedPrefix, command }) => {
     const { text: result } = data.data || {};
     const model = data.data?.detail?.model;
     const creator = data.creator || '';
-    const fullResult = `${result}\n\nModel: ${model}\nCreator: ${creator}`;
+    const fullResult = `${result}\n\nModel: ${model}\nCreator: Syntax`;
     m.reply(fullResult.trim());
   } catch (error) {
     console.error('Error:', error); // Log the error
