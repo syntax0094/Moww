@@ -1,89 +1,204 @@
-import { createHash } from 'crypto'
-import PhoneNumber from 'awesome-phonenumber'
-import { canLevelUp, xpRange } from '../lib/levelling.js'
-import fetch from 'node-fetch'
-import fs from 'fs'
-const { levelling } = '../lib/levelling.js'
-import moment from 'moment-timezone'
+//import db from '../lib/database.js'
 import { promises } from 'fs'
 import { join } from 'path'
-const time = moment.tz('Asia/Kolkata').format('HH')
-let wib = moment.tz('Asia/Kolkata').format('HH:mm:ss')
-//import db from '../lib/database.js'
+import fetch from 'node-fetch'
+import moment from 'moment-timezone'
+import { xpRange } from '../lib/levelling.js'
+//import { plugins } from '../lib/plugins.js'
+let tags = {
+  'main': 'MAIN',
+  'game': 'GAMES',
+  'econ': 'LEVEL & ECONOMY',
+  'rg': 'REGISTER ',
+  'sticker': 'STICKER',
+  'img': 'IMAGE',
+  'maker': 'MAKER',
+  'vip': 'VIP-LOGO',
+  'stalk': 'STALK',
+  'prem': 'PREMIUM',
+  'group': 'GROUP',
+  'nable': 'EN/DISABLE OPTIONS', 
+  'nime': 'ANIME',
+  'database': 'DATABASE',
+  'rnime': 'ANIME REACCION',
+  'dl': 'DISCHARGES',
+  'tools': 'TOOLS',
+  'fun': 'FUN',
+  'pies': 'PIES',
+  'cmd': 'DATABASE',
+  'nsfw': 'NSFW +18', 
+  'ansfw': 'NSFW ANIME',
+  'owner': 'OWNER', 
+  'advanced': 'ADVANCED',
+}
+const defaultMenu = {
+  before: `
+┌───•✧𝑰𝑵𝑭𝑶 𝑼𝑺𝑬𝑹✧•────┐
+┊ 👨‍💻  *Name:* %name
+┊ 😈  𝗢𝘄𝗻𝗲𝗿 𝗡𝗮𝗺𝗲 :shubham
+┊ 👤  𝗣𝗿𝗲𝗺𝗶𝘂𝗺 : ❌
+┊ 💎  *Diamonds:* %diamond
+┊ 📱  *Rank:* %role
+┊ 🃏  *Experience:* %exp
+└─────── •✧✧• ───────┘
 
-let handler = async (m, { conn, usedPrefix, command}) => {
+┌──────•✧𝑻𝒐𝒅𝒂𝒚✧•─────┐
+┊ 📅   *Date:* %date
+┊ ⏲️   *Time:* %time
+└─────── •✧✧• ───────┘ 
+
+┌────•✧𝑩𝑶𝑻 𝑰𝑵𝑭𝑶✧•────┐
+┊ 🤖  *Name Bot:* syntax-md
+┊ 👨‍💻   𝗣𝗹𝗮𝘁𝗳𝗼𝗿𝗺 :linux 
+┊ 😼  *Mode:* public
+┊ 🛑  *Prefix:* [ . ]
+┊ 🕛  *Uptime:* %muptime
+┊ 💌  *Database:* %rtotalreg From %totalreg
+┊ 🗃️  *Total users:* %rtotalreg
+└─────── •✧✧• ───────┘ 
+
+%readmore
+Ⓟ = Premium
+ⓓ = Diamantes
+-----  -----  -----  -----  -----
+  ≡ *MENU LIST*
+`.trimStart(),
+  header: '┌────•✧%category✧•────┐',
+  
+
+  body: '┊ ❥ %cmd %isdiamond %isPremium',
+  footer: '└────── •✧✧• ──────┘\n',
+  after: `made by shubham
+`,
+}
+let handler = async (m, { conn, usedPrefix: _p, __dirname }) => {
+  try {
+    let _package = JSON.parse(await promises.readFile(join(__dirname, '../package.json')).catch(_ => ({}))) || {}
+    let { exp, diamond, level, role } = global.db.data.users[m.sender]
+    let who = m.quoted ? m.quoted.sender : m.mentionedJid && m.mentionedJid[0] ? m.mentionedJid[0] : m.fromMe ? conn.user.jid : m.sender
+    let prem = global.prems.includes(who.split`@`[0])
+    let mode = global.opts['self'] ? 'Private' : 'Public'
+    let { min, xp, max } = xpRange(level, global.multiplier)
+  
+    let name = await conn.getName(m.sender)
     let d = new Date(new Date + 3600000)
     let locale = 'en'
+    // d.getTimeZoneOffset()
+    // Offset -420 is 18.00
+    // Offset    0 is  0.00
+    // Offset  420 is  7.00
+    let weton = ['Pahing', 'Pon', 'Wage', 'Kliwon', 'Legi'][Math.floor(d / 84600000) % 5]
     let week = d.toLocaleDateString(locale, { weekday: 'long' })
     let date = d.toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' })
+    let time = d.toLocaleTimeString(locale, {
+      hour: 'numeric',
+      minute: 'numeric',
+      second: 'numeric'
+    })
     let _uptime = process.uptime() * 1000
+    let _muptime
+    if (process.send) {
+      process.send('uptime')
+      _muptime = await new Promise(resolve => {
+        process.once('message', resolve)
+        setTimeout(resolve, 1000)
+      }) * 1000
+    }
+    let muptime = clockString(_muptime)
     let uptime = clockString(_uptime)
-let who = m.quoted ? m.quoted.sender : m.mentionedJid && m.mentionedJid[0] ? m.mentionedJid[0] : m.fromMe ? conn.user.jid : m.sender
-if (!(who in global.db.data.users)) throw `✳️ The user is not found in my database`
-let pp = './Guru.jpg'
-let user = global.db.data.users[who]
-let { name, exp, diamond, lastclaim, registered, regTime, age, level, role, warn } = global.db.data.users[who]
-let { min, xp, max } = xpRange(user.level, global.multiplier)
-let username = conn.getName(who)
-let math = max - xp
-let prem = global.prems.includes(who.split`@`[0])
-let sn = createHash('md5').update(who).digest('hex')
-let totaluser = Object.values(global.db.data.users).length 
-let rtotalreg = Object.values(global.db.data.users).filter(user => user.registered == true).length 
-let more = String.fromCharCode(8206)
-let readMore = more.repeat(850) 
-let greeting = ucapan()
-let quote = quotes[Math.floor(Math.random() * quotes.length)];
-
-let taguser = '@' + m.sender.split("@s.whatsapp.net")[0]
-let str = `
-🚀 *_Buckle up ${name}, ${greeting}! We're going on an adventure!_* 🚀
-
-📜 *_Quote of the day: ${quote}_* 📜
-
-┏━💼 _User Info:_ 💼━┓
-┃ 👾  *User Tag:* ${taguser} 
-┃ 🎩  *Name:* ${name} 
-┃ 🦸  *Master Mind:* ${author} 
-┃ 💎  *Diamonds:* ${diamond} 
-┃ 🏆  *Rank:* ${role}
-┃ 🎮  *XP:* ${exp} 
-┗━━━━━━━━━━━┛
-
-┏━━⏰ _Today's Sauce!_ ⏰━┓
-┃ 📆  *Today's Date:* ${date} 
-┃ ⏲️  *Current Time:* ${wib} 
-┗━━━━━━━━━━━━━┛
-
-┏━━🤖 _BOT STATUS:_🤖━━┓
-┃ 🤡  *Bot Name:* ${botname} 
-┃ 💻  *Platform:* Linux 
-┃ 📣  *Prefix:* ${usedPrefix} 
-┃ 🕓  *Uptime:* ${uptime}
-┃ 💌  *Database:* ${rtotalreg} of ${totaluser} 
-┃ 📚  *Total Users:* ${totaluser} 
-┗━━━━━━━━━━━━━┛
-
-💡 *_Remember, when in doubt, use ${usedPrefix}list. It's like my magic spell book!_* 💡
-`
-
-
-    conn.sendFile(m.chat, pp, 'perfil.jpg', str, m, null, rpyt)
-    m.react(done)
-
+    let totalreg = Object.keys(global.db.data.users).length
+    let rtotalreg = Object.values(global.db.data.users).filter(user => user.registered == true).length
+    let help = Object.values(global.plugins).filter(plugin => !plugin.disabled).map(plugin => {
+      return {
+        help: Array.isArray(plugin.tags) ? plugin.help : [plugin.help],
+        tags: Array.isArray(plugin.tags) ? plugin.tags : [plugin.tags],
+        prefix: 'customPrefix' in plugin,
+        diamond: plugin.diamond,
+        premium: plugin.premium,
+        enabled: !plugin.disabled,
+      }
+    })
+    for (let plugin of help)
+      if (plugin && 'tags' in plugin)
+        for (let tag of plugin.tags)
+          if (!(tag in tags) && tag) tags[tag] = tag
+    conn.menu = conn.menu ? conn.menu : {}
+    let before = conn.menu.before || defaultMenu.before
+    let header = conn.menu.header || defaultMenu.header
+    let body = conn.menu.body || defaultMenu.body
+    let footer = conn.menu.footer || defaultMenu.footer
+    let after = conn.menu.after || (conn.user.jid == conn.user.jid ? '' : `Powered by https://wa.me/${conn.user.jid.split`@`[0]}`) + defaultMenu.after
+    let _text = [
+      before,
+      ...Object.keys(tags).map(tag => {
+        return header.replace(/%category/g, tags[tag]) + '\n' + [
+          ...help.filter(menu => menu.tags && menu.tags.includes(tag) && menu.help).map(menu => {
+            return menu.help.map(help => {
+              return body.replace(/%cmd/g, menu.prefix ? help : '%p' + help)
+                .replace(/%isdiamond/g, menu.diamond ? '(ⓓ)' : '')
+                .replace(/%isPremium/g, menu.premium ? '(Ⓟ)' : '')
+                .trim()
+            }).join('\n')
+          }),
+          footer
+        ].join('\n')
+      }),
+      after
+    ].join('\n')
+    let text = typeof conn.menu == 'string' ? conn.menu : typeof conn.menu == 'object' ? _text : ''
+    let replace = {
+      '%': '%',
+      p: _p, uptime, muptime,
+      me: conn.getName(conn.user.jid),
+      npmname: _package.name,
+      npmdesc: _package.description,
+      version: _package.version,
+      exp: exp - min,
+      maxexp: xp,
+      totalexp: exp,
+      xp4levelup: max - exp,
+      github: _package.homepage ? _package.homepage.url || _package.homepage : '[unknown github url]',
+      level, diamond, name, weton, week, date, date, time, totalreg, rtotalreg, role,
+      readmore: readMore
+    }
+    text = text.replace(new RegExp(`%(${Object.keys(replace).sort((a, b) => b.length - a.length).join`|`})`, 'g'), (_, name) => '' + replace[name])
+    
+    let pp = './Guru.jpg'
+     
+    conn.sendFile(m.chat, pp, 'menu.jpg', text.trim(), m, null, rpl)
+    /*conn.sendButton(m.chat, text.trim(), '▢ DyLux  ┃ ᴮᴼᵀ\n▢ Sígueme en Instagram\nhttps://www.instagram.com/pratapp_2714, pp, [
+      ['ꨄ︎ Apoyar', `${_p}donate`],
+      ['⏍ Info', `${_p}botinfo`],
+      ['⌬ Grupos', `${_p}gpdylux`]
+    ],m, rpl)*/
+  
+    m.react('🥵') 
+    
+  } catch (e) {
+    conn.reply(m.chat, '❎ Sorry, 😔 menu me error ha yaar ', m)
+    throw e
+  }
 }
-handler.help = ['main']
-handler.tags = ['group']
-handler.command = ['menu', 'help','h','command'] 
+handler.help = ['help']
+handler.tags = ['main']
+handler.command = ['menu', 'help', 'menú'] 
+handler.register = false
+
+handler.exp = 3
 
 export default handler
+
+const more = String.fromCharCode(8206)
+const readMore = more.repeat(4001)
+
 function clockString(ms) {
-    let h = isNaN(ms) ? '--' : Math.floor(ms / 3600000)
-    let m = isNaN(ms) ? '--' : Math.floor(ms / 60000) % 60
-    let s = isNaN(ms) ? '--' : Math.floor(ms / 1000) % 60
-    return [h, m, s].map(v => v.toString().padStart(2, 0)).join(':')}
-    
-    function ucapan() {
+  let d = isNaN(ms) ? '--' : Math.floor(ms / 86400000)
+  let h = isNaN(ms) ? '--' : Math.floor(ms / 3600000) % 24
+  let m = isNaN(ms) ? '--' : Math.floor(ms / 60000) % 60
+  let s = isNaN(ms) ? '--' : Math.floor(ms / 1000) % 60
+  return [d, 'd ', h, 'h ', m, 'm '].map(v => v.toString().padStart(2, 0)).join('')
+}
+function ucapan() {
       const time = moment.tz('Asia/Kolkata').format('HH')
       let res = "happy early in the day☀️"
       if (time >= 4) {
@@ -100,26 +215,4 @@ function clockString(ms) {
       }
       return res
     }
-    const quotes = [
-      "I'm not lazy, I'm just on my energy saving mode.",
-      "Life is short, smile while you still have teeth.",
-      "I may be a bad influence, but darn I am fun!",
-      "वक्त हमे बहुत कुछ सिखा देता है, खासकर तब जब हमारे पास वक्त नहीं होता।",
-      "जिंदगी एक किताब की तरह होती है, हर दिन नया पन्ना बदलता है। कभी हंसते हैं, कभी रोते हैं, पर हर किसी की कहानी अधूरी होती है!",
-      "पढ़ाई करो तो दिल लगता नही, दिल लगाओ तो दिमाग़ लगता नहीं।",
-      "दोस्ती इतनी गहरी करो की दिल में बस जाओ, ऐसे दोस्ती निभाओ की हमे भी तुम्हारे दोस्त होने पर नाज हो।",
-      "मेरे दोस्त तुम बहुत याद आते हो, जब भी भूख लगती है वो समोसे बहुत याद आते है।",
-      "जीवन का असली मज़ा तो तब आता है, जब दूसरे आपकी ज़िंदगी जीने की कोशिश करते हैं।",
-      "कुछ लोग तो इतने फालतू होते हैं, खुद की ज़िंदगी खुद ही नहीं जी पाते और दूसरों की ज़िंदगी में टांग अड़ा देते हैं।",
-      "I'm on a whiskey diet. I've lost three days already.",
-      "Why don't some couples go to the gym? Because some relationships don't work out.",
-      "I told my wife she should embrace her mistakes... She gave me a hug.",
-      "If I'm not back in five minutes, wait longer!",
-      "I asked my wife if I was the only one she's been with. She said, 'Yes, the others were nines and tens.'",
-      "Don’t worry if plan A fails, there are 25 more letters in the alphabet.",
-      "I'm great at multitasking. I can waste time, be unproductive, and procrastinate all at once.",
-      "You know you're getting old when you stoop to tie your shoelaces and wonder what else you could do while you're down there.",
-      "I'm so good at sleeping, I can do it with my eyes closed.",
-      "If you think nobody cares if you’re alive, try missing a couple of payments."
-    ]
     
