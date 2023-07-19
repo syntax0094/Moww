@@ -825,6 +825,7 @@ TO DEACTIVE , PRESS
 }
 
 global.dfail = (type, m, conn) => {
+
     let msg = {
         rowner: '*ᴏɴʟʏ ᴅᴇᴠᴇʟᴏᴘᴇʀ* • This command can only be used by the *Creator of the bot*',
         owner: '*ᴏɴʟʏ ᴏᴡɴᴇʀ* • This command can only be used by the *Bot Owner',
@@ -837,8 +838,31 @@ global.dfail = (type, m, conn) => {
         unreg: '*ʏᴏᴜ ᴀʀᴇ ɴᴏᴛ ʀᴇɢɪsᴛᴇʀᴇᴅ ʏᴇᴛ* •  Sign in to use this feature Typing:\n\n*/reg name.age*\n\n📌Example : */reg GURU.20*', 
         restrict: '*ʀᴇsᴛʀɪᴄᴛ* • This feature is *disabled*',
     }[type]
-    if (msg) return m.reply(msg)
-}
+    if (msg) return conn.sendMessage(m.chat, {
+    text: msg,
+    contextInfo: {
+    externalAdReply: {
+     title: botname,
+    thumbnailUrl: "https://youtube.com/@samcreation8299",
+    sourceUrl: fgyt,
+    mediaType: 1,
+
+    renderLargerThumbnail: false
+    }}}, { quoted: m})
+    let msgg = {
+        unreg: `*「 🚩 LIST 」*\n\n📝 Please register to the database first to use this bot feature. Use the following command:\n\n👉 .register your name.age\n👤 Example: .register Syntax.18\n\n`
+    }[type]
+    if (msgg) return conn.sendMessage(m.sender, {
+    text: msgg,
+    contextInfo: {
+    externalAdReply: {
+     title: botname,
+    thumbnailUrl: "https://youtube.com/@samcreation8299",
+    sourceUrl: fgyt,
+    mediaType: 1,
+    renderLargerThumbnail: true
+    }}}, { quoted: m})
+	    }
 
 let file = global.__filename(import.meta.url, true)
 watchFile(file, async () => {
