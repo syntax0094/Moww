@@ -18,11 +18,16 @@ var handler = async (m, { conn, command, text, usedPrefix }) => {
   let wm = 'Downloading audio please wait';
 
   let captvid = `✼ ••๑⋯ ❀ Y O U T U B E ❀ ⋯⋅๑•• ✼
-  ❏ Title: ${title}
-  ❐ Duration: ${timestamp}
-  ❑ Views: ${views}
-  ❒ Upload: ${ago}
-  ❒ Link: ${url}
+  🪀 Title: ${title}
+  🪀 Duration: ${timestamp}
+  🪀 Views: ${views}
+  🪀 Upload: ${ago}
+  🪀 Link: ${url}
+  Listening to: *${title}*
+  01:43 ━━━━●───── 03:50
+   ⇆ㅤ ㅤ◁ㅤ ❚❚ ㅤ▷ ㅤㅤ↻﻿
+      ılıılıılıılıılıılı
+    ᴠᴏʟᴜᴍᴇ : ▮▮▮▮▮▮▮▮▮▮  
 ⊱─━━━━⊱༻●༺⊰━━━━─⊰`;
 
   conn.sendMessage(m.chat, { image: { url: thumbnail }, caption: captvid, footer: author }, { quoted: m });
