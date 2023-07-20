@@ -37,7 +37,6 @@ global.APIs = { // API Prefix
   fgmods: 'https://api-fgmods.ddns.net',
    logo: 'https://oni-chan.my.id',
   rose: 'https://api.itsrose.site',
-   rose: 'https://api.itsrose.site',
   zeltoria: 'https://api.zeltoria.my.id'
 }
 global.APIKeys = { // APIKey Here
