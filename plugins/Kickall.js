@@ -1,4 +1,3 @@
-
 let handler = async (m, { conn, participants }) => {
     let users = participants.map(user => user.jid)
     console.log("this is a log")
@@ -22,12 +21,10 @@ let handler = async (m, { conn, participants }) => {
   handler.group = false
   handler.private = false
   
- 
+  handler.admin = true
   handler.botAdmin = false
   
   handler.fail = null
   handler.limit = true
   
   module.exports = handler
-  
-  
