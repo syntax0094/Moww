@@ -5,7 +5,7 @@ import fs from 'fs'
 import fetch from 'node-fetch'
 import axios from 'axios'
 
-
+global.botAdmin = ['917798203711', 'SHUBHAM', true]
 global.owner = [
   ['917798203711', 'SHUBHAM', true],
   ['917821096044', 'BABY', true], 
