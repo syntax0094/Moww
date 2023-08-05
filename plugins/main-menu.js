@@ -68,7 +68,7 @@ const defaultMenu = {
 
   body: '┊ ❥ %cmd %isdiamond %isPremium',
   footer: '└────── •✧✧• ──────┘\n',
-  after: `made by shubham
+  after: `made by Pratap 💌
 `,
 }
 let handler = async (m, { conn, usedPrefix: _p, __dirname }) => {
