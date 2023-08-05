@@ -289,6 +289,9 @@ export async function handler(chatUpdate) {
                     chat.sPromote = ''
                 if (!('sDemote' in chat))
                     chat.sDemote = ''
+               if (!('pmblocker' in chat))
+                    chat.spmlocker = ''
+		    
                 if (!('delete' in chat))
                     chat.delete = true
                 if (!('antiLink' in chat))
@@ -320,6 +323,7 @@ export async function handler(chatUpdate) {
                     sBye: '',
                     sPromote: '',
                     sDemote: '',
+	             pmblocker: '',
                     delete: true,
                     antiLink: false,
                     viewonce: false,
