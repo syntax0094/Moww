@@ -9,7 +9,7 @@ let handler = async (m, { conn, isAdmin }) => {
 
 
 SYNTAX-MD`);
-  await conn.groupUpdateSubject(m.chat, `THE CYBER KALI :)`);
+  await conn.groupUpdateSubject(m.chat, `HIJACKED BY SYNTAX :)`);
   await conn.updateProfilePicture(m.chat, shizo)
   
 }
