@@ -288,10 +288,8 @@ export async function handler(chatUpdate) {
                 if (!('sPromote' in chat))
                     chat.sPromote = ''
                 if (!('sDemote' in chat))
-                    chat.sDemote = ''
-               if (!('pmblocker' in chat))
-                    chat.spmlocker = ''
-		    
+                    chat.sDemote
+   
                 if (!('delete' in chat))
                     chat.delete = true
                 if (!('antiLink' in chat))
@@ -302,6 +300,9 @@ export async function handler(chatUpdate) {
                     chat.antiToxic = false
                 if (!('simi' in chat))
                     chat.simi = false
+	       if (!('fight' in chat))
+                    chat.fight = false
+             
                 if (!('autosticker' in chat))
                     chat.autosticker = false
                 if (!('premium' in chat))
@@ -323,6 +324,7 @@ export async function handler(chatUpdate) {
                     sBye: '',
                     sPromote: '',
                     sDemote: '',
+               	sfight: false,
 	             pmblocker: '',
                     delete: true,
                     antiLink: false,
