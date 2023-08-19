@@ -7,12 +7,12 @@ import axios from 'axios'
 
 global.owner = [
   ['918010431346', 'Pratap', true],
-  ['917821096044', 'SHUBHAM, true], 
+  ['', 'BABY', false], 
   [''] 
 ] //Number of owners
 
-global.mods = ['972538935732'] 
-global.prems = ['918010431346', '972538935732', '972538935732']
+global.mods = ['919823642839'] 
+global.prems = ['917605902011', '917821096044', '917821096044']
 global.keysZens = ['c2459db922', '37CC845916', '6fb0eff124']
 global.keysxxx = keysZens[Math.floor(keysZens.length * Math.random())]
 global.keysxteammm = ['29d4b59a4aa687ca', '5LTV57azwaid7dXfz5fzJu', 'cb15ed422c71a2fb', '5bd33b276d41d6b4', 'HIRO', 'kurrxd09', 'ebb6251cc00f9c63']
@@ -52,7 +52,7 @@ global.APIKeys = { // APIKey Here
 global.botname = '𝚂𝚢𝚗𝚝𝚊𝚡-𝚖𝚍'
 global.premium = 'true'
 global.packname = 'syntax' 
-global.author = '@pratap' 
+global.author = '@Pratap 💌✨' 
 global.igfg = '▢ Follow on Instagram\nhttps://www.instagram.com\n' 
 global.dygp = 'https://youtube.com/@samcreation8299'
 global.fgsc = 'https://GitHub.com' 
